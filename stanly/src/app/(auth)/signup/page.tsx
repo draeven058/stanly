@@ -1,0 +1,9 @@
+import { Metadata } from "next";
+import { AuthForm } from "@/components/auth/auth-form";
+import { signup } from "@/actions/auth";
+
+export const metadata: Metadata = { title: "Create account" };
+
+export default function SignupPage() {
+  return <AuthForm action={signup} type="signup" />;
+}
