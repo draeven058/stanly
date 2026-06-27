@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import { streamText } from "ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -27,10 +27,10 @@ ${(products ?? []).map((p: any) => `- ${p.title} ($${(p.price / 100).toFixed(2)}
   }
 
   const result = await streamText({
-    model: openai("gpt-4o-mini"),
+    model: google("gemini-1.5-flash"),
     system: `You are a friendly customer support assistant for a digital creator's store.
 Help buyers understand products and guide them to purchase.
-Be warm, concise. Keep responses under 3 sentences when possible.
+Be warm and concise. Keep responses under 3 sentences when possible.
 Never make up info not in the store context.
 ${storeContext ? `\nSTORE CONTEXT:\n${storeContext}` : ""}`,
     messages,

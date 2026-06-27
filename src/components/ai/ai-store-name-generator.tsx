@@ -5,7 +5,6 @@ import { Sparkles, Loader2, Check, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface Suggestion {
@@ -37,10 +36,14 @@ export function AIStoreNameGenerator({ creatorName, onSelect }: AIStoreNameGener
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: creatorName, niche, style }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `HTTP ${res.status}`);
+      }
       const data = await res.json();
       setSuggestions(data.suggestions ?? []);
-    } catch {
-      setError("Failed to generate names. Check your OpenAI API key.");
+    } catch (err: any) {
+      setError(`Failed to generate names. ${err.message ?? "Check your Gemini API key in Vercel."}`);
     } finally {
       setIsLoading(false);
     }
@@ -98,10 +101,14 @@ export function AIStoreNameGenerator({ creatorName, onSelect }: AIStoreNameGener
         ) : (
           <Sparkles className="h-4 w-4" />
         )}
-        {suggestions.length > 0 ? "Generate more ideas" : "Generate 5 name ideas"}
+        {isLoading ? "Generating..." : suggestions.length > 0 ? "Generate more ideas" : "Generate 5 name ideas"}
       </Button>
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+          <p className="text-xs text-destructive">{error}</p>
+        </div>
+      )}
 
       {suggestions.length > 0 && (
         <div className="space-y-2">

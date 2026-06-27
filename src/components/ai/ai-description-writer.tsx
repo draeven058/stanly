@@ -12,12 +12,7 @@ interface AIDescriptionWriterProps {
   onAccept: (text: string) => void;
 }
 
-export function AIDescriptionWriter({
-  title,
-  type,
-  price,
-  onAccept,
-}: AIDescriptionWriterProps) {
+export function AIDescriptionWriter({ title, type, price, onAccept }: AIDescriptionWriterProps) {
   const { completion, complete, isLoading, error } = useCompletion({
     api: "/api/ai/product-description",
   });
@@ -68,22 +63,20 @@ export function AIDescriptionWriter({
       )}
 
       {(isLoading || completion) && (
-        <div
-          className={cn(
-            "rounded-lg bg-background border border-border p-3 text-sm leading-relaxed min-h-[80px]",
-            isLoading && "animate-pulse"
-          )}
-        >
-          {completion || (
-            <span className="text-muted-foreground">Writing your description…</span>
-          )}
+        <div className={cn(
+          "rounded-lg bg-background border border-border p-3 text-sm leading-relaxed min-h-[80px]",
+          isLoading && "animate-pulse"
+        )}>
+          {completion || <span className="text-muted-foreground">Writing your description…</span>}
         </div>
       )}
 
       {error && (
-        <p className="text-xs text-destructive">
-          Error generating description. Check your OpenAI API key.
-        </p>
+        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+          <p className="text-xs text-destructive">
+            Failed to generate. Make sure GOOGLE_GENERATIVE_AI_API_KEY is set in Vercel.
+          </p>
+        </div>
       )}
 
       {completion && !isLoading && (

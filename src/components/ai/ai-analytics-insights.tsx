@@ -62,7 +62,7 @@ export function AIAnalyticsInsights({ stats, products, recentOrders }: AIAnalyti
       setData(result);
       setExpanded(true);
     } catch {
-      setError("Failed to analyze. Check your OpenAI API key.");
+      setError("Failed to analyze. Make sure GOOGLE_GENERATIVE_AI_API_KEY is set in Vercel.");
     } finally {
       setIsLoading(false);
     }

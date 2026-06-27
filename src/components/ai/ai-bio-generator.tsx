@@ -23,9 +23,7 @@ export function AIBioGenerator({ name, onAccept }: AIBioGeneratorProps) {
   });
 
   async function handleGenerate() {
-    await complete("", {
-      body: { name, niche, tone },
-    });
+    await complete("", { body: { name, niche, tone } });
   }
 
   return (
@@ -77,14 +75,8 @@ export function AIBioGenerator({ name, onAccept }: AIBioGeneratorProps) {
             disabled={isLoading}
             className="w-full h-8 gap-1.5 text-xs border-primary/30 text-primary hover:bg-primary/10"
           >
-            {isLoading ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : completion ? (
-              <RefreshCw className="h-3 w-3" />
-            ) : (
-              <Sparkles className="h-3 w-3" />
-            )}
-            {completion ? "Regenerate bio" : "Generate bio"}
+            {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : completion ? <RefreshCw className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}
+            {isLoading ? "Writing..." : completion ? "Regenerate bio" : "Generate bio"}
           </Button>
 
           {(isLoading || completion) && (
@@ -97,7 +89,11 @@ export function AIBioGenerator({ name, onAccept }: AIBioGeneratorProps) {
           )}
 
           {error && (
-            <p className="text-xs text-destructive">Error — check your OpenAI API key.</p>
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+              <p className="text-xs text-destructive">
+                Failed to generate. Make sure GOOGLE_GENERATIVE_AI_API_KEY is set in Vercel.
+              </p>
+            </div>
           )}
 
           {completion && !isLoading && (
