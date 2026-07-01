@@ -20,6 +20,12 @@ export interface Profile {
   updated_at: string;
 }
 
+// Mirrors the Postgres enum `store_template_id` in
+// supabase/migrations/0001_add_store_templates.sql.
+// If a new template is added to the database enum, add it here
+// in the same migration/commit so the two never drift apart.
+export type StoreTemplateId = "minimal" | "bold" | "gallery";
+
 export interface Store {
   id: string;
   user_id: string;
@@ -29,9 +35,30 @@ export interface Store {
   logo_url: string | null;
   banner_url: string | null;
   theme_color: string;
+  template_id: StoreTemplateId;
   is_active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+// Pricing tier a template is gated behind. Lives alongside the
+// Store types (not in lib/templates/) because it's part of the
+// public data contract — the dashboard, the picker UI, and any
+// future billing code all need to agree on what "tier" means.
+export type TemplateTier = "free" | "premium";
+
+// Static metadata describing one entry in the template registry.
+// This is NOT a database row — there is no `templates` table.
+// The registry lives in code (lib/templates/store/registry.ts)
+// and this type just gives that registry a shape. See the
+// architecture note in that file for why tier-gating is
+// code-level rather than a DB column.
+export interface StoreTemplateMeta {
+  id: StoreTemplateId;
+  label: string;
+  description: string;
+  tier: TemplateTier;
+  previewImageUrl: string;
 }
 
 export type ProductType = "digital" | "course" | "membership" | "link";

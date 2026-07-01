@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
 
@@ -6,6 +6,13 @@ export const maxDuration = 30;
 
 export async function POST(request: Request) {
   const { stats, products, recentOrders } = await request.json();
+
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  if (!apiKey) {
+    return new Response("GOOGLE_GENERATIVE_AI_API_KEY not set", { status: 500 });
+  }
+
+  const google = createGoogleGenerativeAI({ apiKey });
 
   const result = await generateObject({
     model: google("gemini-1.5-flash"),
@@ -17,20 +24,17 @@ export async function POST(request: Request) {
         detail: z.string(),
       })).min(3).max(5),
       topRecommendation: z.object({
-        action: z.string().describe("The single most impactful thing to do now"),
-        expectedImpact: z.string().describe("What result this will have"),
+        action: z.string(),
+        expectedImpact: z.string(),
       }),
     }),
-    prompt: `Analyze this creator store performance and give actionable insights:
-
+    prompt: `Analyze this creator store performance:
 Revenue (30 days): $${((stats?.total_revenue ?? 0) / 100).toFixed(2)}
-Orders (30 days): ${stats?.total_orders ?? 0}
-Total products: ${stats?.total_products ?? 0}
-Page views: ${stats?.total_views ?? 0}
-Conversion rate: ${stats?.total_views ? ((stats.total_orders / stats.total_views) * 100).toFixed(1) : 0}%
-Products: ${JSON.stringify(products?.slice(0, 5) ?? [])}
-
-Give honest, specific, actionable insights. Be direct.`,
+Orders: ${stats?.total_orders ?? 0}
+Products: ${stats?.total_products ?? 0}
+Views: ${stats?.total_views ?? 0}
+Conversion: ${stats?.total_views ? ((stats.total_orders / stats.total_views) * 100).toFixed(1) : 0}%
+Give honest, specific, actionable insights.`,
   });
 
   return Response.json(result.object);
