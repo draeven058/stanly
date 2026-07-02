@@ -17,10 +17,20 @@ export function StoreLinksList({ links }: StoreLinksListProps) {
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 font-medium transition-all hover:border-primary/40 hover:bg-accent group"
+          className="flex items-center justify-between px-4 py-3.5 font-medium transition-all group"
+          style={{
+            backgroundColor: "var(--store-surface)",
+            border: "1px solid var(--store-border)",
+            borderRadius: "var(--store-btn-radius)",
+            color: "var(--store-text)",
+            fontSize: "var(--store-body-size)",
+          }}
         >
           <span>{link.title}</span>
-          <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          <ExternalLink
+            className="h-4 w-4 transition-colors"
+            style={{ color: "var(--store-text-muted)" }}
+          />
         </Link>
       ))}
     </div>

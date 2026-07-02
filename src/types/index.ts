@@ -36,6 +36,7 @@ export interface Store {
   banner_url: string | null;
   theme_color: string;
   template_id: StoreTemplateId;
+  appearance: PartialStoreAppearance;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -60,6 +61,85 @@ export interface StoreTemplateMeta {
   tier: TemplateTier;
   previewImageUrl: string;
 }
+
+// ============================================================
+// Store Appearance — mirrors the JSONB schema in
+// supabase/migrations/0002_add_store_appearance.sql.
+//
+// All keys are optional at the type level (Partial<>) because
+// the store page merges saved config with defaults — a missing
+// key in the DB row (e.g. from a store created before a new
+// token was added) falls back to the default rather than
+// crashing. The editor always writes a complete config, but
+// reads must tolerate partial data.
+// ============================================================
+
+export type AppearanceFontFamily =
+  | "Inter"
+  | "Lora"
+  | "DM Mono"
+  | "Cal Sans"
+  | "Playfair Display";
+
+export type AppearanceHeadingSize = "xl" | "2xl" | "3xl" | "4xl";
+export type AppearanceBodySize = "xs" | "sm" | "base";
+export type AppearanceFontWeight = "normal" | "medium" | "semibold" | "bold";
+export type AppearanceContainerWidth = "sm" | "md" | "lg" | "xl" | "2xl";
+export type AppearanceButtonRadius = "none" | "sm" | "md" | "lg" | "full";
+export type AppearanceButtonStyle = "filled" | "outline" | "soft";
+export type AppearanceButtonSize = "sm" | "md" | "lg";
+
+export interface StoreAppearanceColors {
+  accent: string;
+  background: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  border: string;
+}
+
+export interface StoreAppearanceTypography {
+  fontFamily: AppearanceFontFamily;
+  headingSize: AppearanceHeadingSize;
+  bodySize: AppearanceBodySize;
+  fontWeight: AppearanceFontWeight;
+}
+
+export interface StoreAppearanceSpacing {
+  containerWidth: AppearanceContainerWidth;
+  sectionGap: string;
+  cardPadding: string;
+}
+
+export interface StoreAppearanceButtons {
+  radius: AppearanceButtonRadius;
+  style: AppearanceButtonStyle;
+  size: AppearanceButtonSize;
+}
+
+export interface StoreAppearanceSections {
+  showBio: boolean;
+  showLinks: boolean;
+  showProducts: boolean;
+  showSocials: boolean;
+  showFooter: boolean;
+}
+
+export interface StoreAppearance {
+  colors: StoreAppearanceColors;
+  typography: StoreAppearanceTypography;
+  spacing: StoreAppearanceSpacing;
+  buttons: StoreAppearanceButtons;
+  sections: StoreAppearanceSections;
+}
+
+export type PartialStoreAppearance = {
+  colors?: Partial<StoreAppearanceColors>;
+  typography?: Partial<StoreAppearanceTypography>;
+  spacing?: Partial<StoreAppearanceSpacing>;
+  buttons?: Partial<StoreAppearanceButtons>;
+  sections?: Partial<StoreAppearanceSections>;
+};
 
 export type ProductType = "digital" | "course" | "membership" | "link";
 

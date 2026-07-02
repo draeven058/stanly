@@ -4,42 +4,42 @@ import { StoreProductsSection } from "../sections/store-products-section";
 import { StoreFooter } from "../sections/store-footer";
 import type { StoreTemplateProps } from "@/lib/templates/store/types";
 
-export function BoldTemplate({ username, profile, store, products, links }: StoreTemplateProps) {
+export function BoldTemplate({ username, profile, store, products, links, appearance }: StoreTemplateProps) {
   const themeColor = store?.theme_color ?? "#7c3aed";
 
   return (
-    <div className="min-h-svh bg-background">
-      {/* Full-bleed banner — taller and more saturated than
-          Minimal's gradient strip, since this template's whole
-          premise is a stronger visual first impression. */}
+    <div className="min-h-svh" style={{ backgroundColor: "var(--store-background)" }}>
       <div
         className="h-64 sm:h-80"
-        style={{
-          background: `linear-gradient(160deg, ${themeColor}90, ${themeColor}30, transparent)`,
-        }}
+        style={{ background: `linear-gradient(160deg, ${themeColor}90, ${themeColor}30, transparent)` }}
       />
-
-      <div className="mx-auto max-w-3xl px-4 pb-28">
+      <div
+        className="mx-auto px-4 pb-28"
+        style={{ maxWidth: "var(--store-container-width, 768px)" }}
+      >
         <div className="-mt-20 sm:-mt-24">
           <StoreProfileHeader
             profile={profile}
             username={username}
             themeColor={themeColor}
             variant="hero"
+            showBio={appearance.sections.showBio}
+            showSocials={appearance.sections.showSocials}
           />
         </div>
-
-        <div className="mt-10 grid gap-10 sm:grid-cols-[1fr] lg:grid-cols-2 lg:items-start">
-          <div className="space-y-3">
-            <StoreLinksList links={links} />
-          </div>
-
-          <div>
-            <StoreProductsSection products={products} themeColor={themeColor} layout="list" />
-          </div>
+        <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start">
+          {appearance.sections.showLinks && (
+            <div className="space-y-3">
+              <StoreLinksList links={links} />
+            </div>
+          )}
+          {appearance.sections.showProducts && (
+            <div>
+              <StoreProductsSection products={products} layout="list" />
+            </div>
+          )}
         </div>
-
-        <StoreFooter />
+        {appearance.sections.showFooter && <StoreFooter />}
       </div>
     </div>
   );

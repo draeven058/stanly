@@ -13,22 +13,26 @@ const TYPE_LABELS: Record<string, string> = {
 
 interface StoreProductCardProps {
   product: Product;
-  themeColor: string;
-  // "list" shows description + full-width buy button (Minimal,
-  // Bold). "grid" is more compact — thumbnail-forward, used inside
-  // a multi-column grid where space is tighter (Gallery).
   layout?: "list" | "grid";
 }
 
+// themeColor prop removed — buttons and prices now read
+// --store-accent / --store-btn-* CSS variables so the appearance
+// editor's live preview works without prop-drilling.
 export function StoreProductCard({
   product,
-  themeColor,
   layout = "list",
 }: StoreProductCardProps) {
   const isGrid = layout === "grid";
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{
+        backgroundColor: "var(--store-surface)",
+        border: "1px solid var(--store-border)",
+      }}
+    >
       <div className="relative aspect-video bg-muted">
         {product.thumbnail_url ? (
           <Image src={product.thumbnail_url} alt={product.title} fill className="object-cover" />
@@ -39,14 +43,28 @@ export function StoreProductCard({
         )}
       </div>
 
-      <div className={isGrid ? "p-4" : "p-5"}>
+      <div style={{ padding: `var(--store-card-padding)` }}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className={isGrid ? "font-semibold text-sm truncate" : "font-semibold"}>
+            <h3
+              className={isGrid ? "truncate" : ""}
+              style={{
+                fontFamily: "var(--store-font-family)",
+                fontWeight: "var(--store-font-weight)",
+                fontSize: isGrid ? "var(--store-body-size)" : "1rem",
+                color: "var(--store-text)",
+              }}
+            >
               {product.title}
             </h3>
             {!isGrid && product.description && (
-              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+              <p
+                className="mt-1 line-clamp-2"
+                style={{
+                  fontSize: "var(--store-body-size)",
+                  color: "var(--store-text-muted)",
+                }}
+              >
                 {product.description}
               </p>
             )}
@@ -55,21 +73,42 @@ export function StoreProductCard({
             </Badge>
           </div>
           {!isGrid && (
-            <p className="text-xl font-bold shrink-0" style={{ color: themeColor }}>
+            <p
+              className="text-xl shrink-0"
+              style={{
+                fontWeight: "var(--store-font-weight)",
+                color: "var(--store-accent)",
+              }}
+            >
               {formatCurrency(product.price)}
             </p>
           )}
         </div>
 
         {isGrid && (
-          <p className="mt-2 text-base font-bold" style={{ color: themeColor }}>
+          <p
+            className="mt-2 text-base"
+            style={{
+              fontWeight: "var(--store-font-weight)",
+              color: "var(--store-accent)",
+            }}
+          >
             {formatCurrency(product.price)}
           </p>
         )}
 
+        {/* Buy button reads all --store-btn-* variables */}
         <button
-          className="mt-3 w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ backgroundColor: themeColor }}
+          className="mt-3 w-full flex items-center justify-center gap-2 font-semibold transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: "var(--store-btn-bg)",
+            color: "var(--store-btn-text)",
+            border: "1px solid var(--store-btn-border)",
+            borderRadius: "var(--store-btn-radius)",
+            height: "var(--store-btn-height)",
+            padding: "var(--store-btn-padding)",
+            fontSize: "var(--store-btn-font-size)",
+          }}
         >
           <ShoppingCart className="h-4 w-4" />
           Buy now
